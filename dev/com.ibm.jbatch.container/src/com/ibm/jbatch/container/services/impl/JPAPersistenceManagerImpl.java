@@ -81,6 +81,7 @@ import com.ibm.jbatch.container.ws.InstanceState;
 import com.ibm.jbatch.container.ws.JobInstanceNotQueuedException;
 import com.ibm.jbatch.container.ws.WSPartitionStepAggregate;
 import com.ibm.jbatch.container.ws.WSPartitionStepThreadExecution;
+import com.ibm.jbatch.container.ws.WSRemotablePartitionExecution;
 import com.ibm.jbatch.container.ws.WSRemotablePartitionState;
 //import com.ibm.jbatch.container.ws.WSSearchObject;
 import com.ibm.jbatch.container.ws.WSStepThreadExecutionAggregate;
@@ -1628,6 +1629,7 @@ public class JPAPersistenceManagerImpl extends AbstractPersistenceManager implem
                     final RemotablePartitionEntity remotablePartition = new RemotablePartitionEntity(jobExecution, remotablePartitionKey);
                     remotablePartition.setInternalStatus(WSRemotablePartitionState.QUEUED);
                     remotablePartition.setLastUpdated(new Date());
+                    System.out.println("CGCGPSU persisting remotable partition: " + remotablePartitionKey);
                     entityMgr.persist(remotablePartition);
                     return remotablePartition;
                 }
@@ -1703,6 +1705,7 @@ public class JPAPersistenceManagerImpl extends AbstractPersistenceManager implem
                             remotablePartition.setInternalStatus(WSRemotablePartitionState.CONSUMED);
                             remotablePartition.setLastUpdated(new Date());
                         }
+                        System.out.println("CGCGPSU about to persist remotable partition: " + remotablePartitionKey);
                     }
 
                     // 4. Persist
@@ -2635,25 +2638,39 @@ public class JPAPersistenceManagerImpl extends AbstractPersistenceManager implem
 //
 //      }
 //
-//      @Override
-//      public RemotablePartitionEntity updatePartitionExecutionLogDir(final RemotablePartitionKey key, final String logDirPath) {
-//              EntityManager em = getPsu().createEntityManager();
-//              try {
-//                      return new TranRequest<RemotablePartitionEntity>(em){
-//                              public RemotablePartitionEntity call() {
-//                                      RemotablePartitionEntity partitionEntity = entityMgr.find(RemotablePartitionEntity.class, key);
-//                                      if (partitionEntity == null) {
-//                                              throw new IllegalArgumentException("No partition execution found for key = " + key);
-//                                      }
-//                                      partitionEntity.setLogpath(logDirPath);
-//                                      return partitionEntity;
-//                              }
-//                      }.runInNewOrExistingGlobalTran();
-//              } finally {
-//                      em.close();
-//              }
-//
-//      }
+    @Override
+    public RemotablePartitionEntity updateRemotablePartitionLogDir(final RemotablePartitionKey key, final String logDirPath) {
+        System.out.println("CGCGPSU updatePartitionExecutionLogDir entry: partitionVersion = " + partitionVersion);
+
+        // Simply ignore if we don't have the remotable partition table
+        if (partitionVersion < 2) {
+            return null;
+        }
+
+        EntityManager em = getPsu().createEntityManager();
+        System.out.println("CGCGPSU created entity manager");
+        try {
+            return new TranRequest<RemotablePartitionEntity>(em) {
+                @Override
+                public RemotablePartitionEntity call() {
+                    System.out.println("CGCGPSU finding remotable partition entity");
+                    RemotablePartitionEntity partitionEntity = entityMgr.find(RemotablePartitionEntity.class, key);
+                    if (partitionEntity == null) {
+                        System.out.println("CGCGIAE there was no remotable partition " + key);
+                        return null;
+                        //throw new IllegalArgumentException("No partition execution found for key = " + key);
+                    }
+                    System.out.println("CGCGPSU setting log path to " + logDirPath);
+                    partitionEntity.setLogpath(logDirPath);
+                    System.out.println("CGCGPSU returning " + partitionEntity);
+                    return partitionEntity;
+                }
+            }.runInNewOrExistingGlobalTran();
+        } finally {
+            em.close();
+        }
+
+    }
 
     @Override
     public void purgeInGlassfish(String submitter) {
@@ -3168,6 +3185,32 @@ public class JPAPersistenceManagerImpl extends AbstractPersistenceManager implem
 
             return rp != null ? rp.getInternalStatus() : null;
 
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<WSRemotablePartitionExecution> getRemotablePartitionsForJobExecution(final long jobExecutionId) {
+        if (partitionVersion < 2) {
+            return null;
+        }
+
+        final EntityManager em = getPsu().createEntityManager();
+        try {
+            JobExecutionEntity exec = new TranRequest<JobExecutionEntity>(em) {
+                @Override
+                public JobExecutionEntity call() {
+                    JobExecutionEntity je = em.find(JobExecutionEntityV3.class, jobExecutionId);
+                    if (je == null) {
+                        logger.finer("No job execution found with execution id = " + jobExecutionId);
+                        return null;
+                    }
+                    return je;
+                }
+            }.runInNewOrExistingGlobalTran();
+
+            return new ArrayList<WSRemotablePartitionExecution>(exec.getRemotablePartitions());
         } finally {
             em.close();
         }

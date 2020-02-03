@@ -21,6 +21,7 @@ import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -318,6 +319,9 @@ public class BatchRequestUtil {
      */
     public static HttpsURLConnection sendRESTRequest(String restUrl, String requestMethod, 
     		RESTRequest request, RESTResponse response) throws ProtocolException, MalformedURLException, IOException {
+    	
+    	System.out.println("CGCG3 sendrequest " + restUrl);
+    	System.out.println("CGCG3 " + Arrays.toString(Thread.currentThread().getStackTrace()));
 
     	if (isSSLAvailable) {
     		URL url = new URL(restUrl);

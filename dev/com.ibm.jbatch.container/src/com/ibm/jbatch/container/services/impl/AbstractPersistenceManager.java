@@ -42,8 +42,6 @@ import com.ibm.jbatch.container.execution.impl.RuntimeSplitFlowExecution;
 import com.ibm.jbatch.container.execution.impl.RuntimeStepExecution;
 import com.ibm.jbatch.container.persistence.jpa.JobExecutionEntity;
 import com.ibm.jbatch.container.persistence.jpa.JobInstanceEntity;
-import com.ibm.jbatch.container.persistence.jpa.RemotablePartitionEntity;
-import com.ibm.jbatch.container.persistence.jpa.RemotablePartitionKey;
 import com.ibm.jbatch.container.persistence.jpa.RemotableSplitFlowEntity;
 import com.ibm.jbatch.container.persistence.jpa.RemotableSplitFlowKey;
 import com.ibm.jbatch.container.persistence.jpa.StepThreadExecutionEntity;
@@ -348,11 +346,11 @@ public abstract class AbstractPersistenceManager implements IPersistenceManagerS
         return null;
     }
 
-    @Override
-    public RemotablePartitionEntity updatePartitionExecutionLogDir(
-                                                                   RemotablePartitionKey key, String logDirPath) {
-        return null;
-    }
+//    @Override
+//    public RemotablePartitionEntity updatePartitionExecutionLogDir(
+//                                                                   RemotablePartitionKey key, String logDirPath) {
+//        return null;
+//    }
 
     /**
      * TODO - The 'verify' methods that follow are a basic ground work to guard against the invalid transition of job Batch Status / instance State.

@@ -14,9 +14,13 @@ import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.batch.runtime.JobInstance;
+
+import com.ibm.ws.jbatch.joblog.JobExecutionLog.LogLocalState;
 
 public class JobInstanceLog {
 
@@ -84,14 +88,17 @@ public class JobInstanceLog {
 
     /**
      * Delete this instance log, including the top-level directory and all execution logs.
-     * 
+     *
      * @return true if all files were successfully deleted or the files do not exist.
      */
     public boolean purge() {
         boolean success = true;
         for (JobExecutionLog execLog : jobExecutionLogs) {
             //Defect 191586: if the execution logs do not exist true will be returned
-            success = success && execLog.purge();
+            boolean execPurge = execLog.purge();
+            System.out.println("CGCG5 exec " + execLog.getExecutionId() + " purge: " + execPurge);
+            //success = success && execLog.purge();
+            success = success && execPurge;
         }
         for (final File instanceDir : instanceLogRootDirs) {
             //Defect 191586: check to ensure the directory exists before purging
@@ -125,5 +132,42 @@ public class JobInstanceLog {
         }
 
         return success;
+    }
+
+    /**
+     * @return
+     */
+    public boolean areExecutionsLocal() {
+        System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+        for (JobExecutionLog execLog : jobExecutionLogs) {
+            if (execLog.getLocalState() != LogLocalState.EXECUTION_LOCAL) {
+                System.out.println("CGCG instancelog execs local: false");
+                return false;
+            }
+        }
+        System.out.println("CGCG instancelog execs local: true");
+        return true;
+    }
+
+    /**
+     * @return
+     */
+    public boolean hasRemotePartitionLogs() {
+        for (JobExecutionLog execLog : jobExecutionLogs) {
+            if (execLog.getRemotePartitionLogs() != null) {
+                System.out.println("CGCG instancelog has remote: true");
+                return true;
+            }
+        }
+        System.out.println("CGCG instancelog has remote: false");
+        return false;
+    }
+
+    public HashSet<String> getRemotePartitionLogURLs() {
+        HashSet<String> retMe = new HashSet<String>();
+        for (JobExecutionLog execLog : jobExecutionLogs) {
+            retMe.addAll(execLog.getRemotePartitionEndpointURLs());
+        }
+        return retMe;
     }
 }

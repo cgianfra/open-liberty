@@ -26,8 +26,9 @@ public class IOUtils {
      */
     public static void copyStream(InputStream from, OutputStream to) throws IOException {
         byte buffer[] = new byte[2048];
-        int bytesRead;
+        int bytesRead, bytesTotal = 0;
         while ((bytesRead = from.read(buffer)) != -1) {
+        	bytesTotal += bytesRead;
             to.write(buffer, 0, bytesRead);
         }
         from.close();

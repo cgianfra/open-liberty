@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
@@ -49,6 +50,8 @@ import com.ibm.jbatch.container.ws.WSJobExecution;
 import com.ibm.jbatch.container.ws.WSJobInstance;
 import com.ibm.jbatch.container.ws.WSJobRepository;
 import com.ibm.jbatch.container.ws.WSStepThreadExecutionAggregate;
+import com.ibm.websphere.ras.Tr;
+import com.ibm.websphere.ras.TraceComponent;
 import com.ibm.ws.ffdc.annotation.FFDCIgnore;
 import com.ibm.ws.jbatch.joblog.JobExecutionLog;
 import com.ibm.ws.jbatch.joblog.JobExecutionLog.LogLocalState;
@@ -113,6 +116,8 @@ import com.ibm.wsspi.rest.handler.RESTResponse;
                             RESTHandler.PROPERTY_REST_HANDLER_CUSTOM_SECURITY + "=true"
                 })
 public class JobExecutions implements RESTHandler {
+	
+	private static final TraceComponent tc = Tr.register(JobExecutions.class, "wsbatch", "com.ibm.ws.jbatch.rest.resources.RESTMessages");
 
     private WSJobRepository jobRepository;
 
@@ -371,11 +376,10 @@ public class JobExecutions implements RESTHandler {
          * Send the JobExecutionLog in the given response.
          */
         protected void sendJobExecutionLog(JobExecutionLog jobExecutionLog, RESTRequest request, RESTResponse response) throws IOException {
-        	System.out.println("CGCG enter sendJobExecutionLog");
 
         	if ("zip".equals(request.getParameter("type"))) {
 
-        		List<ZipEntry> remotePartitionLogs = new ArrayList<ZipEntry>();
+        		ZipOutputStream zipOutput = new ZipOutputStream(response.getOutputStream());
 
         		// Note: headers must be set *before* writing to the output stream
         		response.setContentType("application/zip");
@@ -393,28 +397,28 @@ public class JobExecutions implements RESTHandler {
 
         			for (String url : partitionEndpointURLs) {
         				// Fetch the contents from the remote partition executor
-        				HttpsURLConnection conn = BatchRequestUtil.sendRESTRequest(
-        						BatchRequestUtil.buildJoblogsUrl(url, jobExecutionLog.getExecutionId()) + "?type=zip&localOnly=true", 
-        						"GET",
-        						request,
-        						null);
+        				String joblogUrl = BatchRequestUtil.buildJoblogsUrl(url, jobExecutionLog.getExecutionId()) + "?type=zip&localOnly=true";
+        				try {
+        					HttpsURLConnection conn = BatchRequestUtil.sendRESTRequest(joblogUrl, "GET", request, null);
 
-        				// TODO what if the request fails? CGCG
-
-        				// Copy zip entries from the remote request
-        				ZipInputStream zipStream = new ZipInputStream(conn.getInputStream());
-        				ZipHelper.copyZipEntries(zipStream, response.getOutputStream());
+        					if (conn != null) {
+        						// Copy zip entries from the remote request
+        						ZipInputStream zipStream = new ZipInputStream(conn.getInputStream());
+        						ZipHelper.copyZipEntries(zipStream, zipOutput);
+        					} 
+        				} catch (Exception ex) {
+        					Tr.debug(tc, "Exception occurred fetching remote partition logs from " + joblogUrl +
+        							", exception details: " + ex.getClass().getName() + ": " + ex.getLocalizedMessage());
+        				}
         			}
 
         		}
 
         		ZipHelper.zipFilesToStream(jobExecutionLog.getJobLogFiles(),
-        				jobExecutionLog.getExecLogRootDir(),
-        				response.getOutputStream());
+        								   jobExecutionLog.getExecLogRootDir(),
+        								   zipOutput);
 
         	} else if ("text".equals(request.getParameter("type"))) {
-
-        		System.out.println("CGCG enter type=text");
 
         		// Note: headers must be set *before* writing to the output stream
         		response.setContentType("text/plain; charset=UTF-8");

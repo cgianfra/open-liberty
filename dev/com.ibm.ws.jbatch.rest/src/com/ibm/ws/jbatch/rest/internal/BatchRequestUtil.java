@@ -320,9 +320,6 @@ public class BatchRequestUtil {
     public static HttpsURLConnection sendRESTRequest(String restUrl, String requestMethod, 
     		RESTRequest request, RESTResponse response) throws ProtocolException, MalformedURLException, IOException {
     	
-    	System.out.println("CGCG3 sendrequest " + restUrl);
-    	System.out.println("CGCG3 " + Arrays.toString(Thread.currentThread().getStackTrace()));
-
     	if (isSSLAvailable) {
     		URL url = new URL(restUrl);
     		HttpsURLConnection connection = BatchRequestUtil.getConnection(url);
@@ -367,10 +364,12 @@ public class BatchRequestUtil {
     		return connection;
 
     	} else {
+    		Tr.debug(tc, "A request to " + restUrl + " could not be completed. " +
+    				"An SSL connection to the endpoint was not available.");
     		return null;
     	}
     }
-    
+
     // Getter for isSSLAvailable
     public static boolean getSSLAvailable() {
     	return isSSLAvailable;

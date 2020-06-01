@@ -1629,7 +1629,6 @@ public class JPAPersistenceManagerImpl extends AbstractPersistenceManager implem
                     final RemotablePartitionEntity remotablePartition = new RemotablePartitionEntity(jobExecution, remotablePartitionKey);
                     remotablePartition.setInternalStatus(WSRemotablePartitionState.QUEUED);
                     remotablePartition.setLastUpdated(new Date());
-                    System.out.println("CGCGPSU persisting remotable partition: " + remotablePartitionKey);
                     entityMgr.persist(remotablePartition);
                     return remotablePartition;
                 }
@@ -1705,7 +1704,6 @@ public class JPAPersistenceManagerImpl extends AbstractPersistenceManager implem
                             remotablePartition.setInternalStatus(WSRemotablePartitionState.CONSUMED);
                             remotablePartition.setLastUpdated(new Date());
                         }
-                        System.out.println("CGCGPSU about to persist remotable partition: " + remotablePartitionKey);
                     }
 
                     // 4. Persist
@@ -2640,7 +2638,6 @@ public class JPAPersistenceManagerImpl extends AbstractPersistenceManager implem
 //
     @Override
     public RemotablePartitionEntity updateRemotablePartitionLogDir(final RemotablePartitionKey key, final String logDirPath) {
-        System.out.println("CGCGPSU updatePartitionExecutionLogDir entry: partitionVersion = " + partitionVersion);
 
         // Simply ignore if we don't have the remotable partition table
         if (partitionVersion < 2) {
@@ -2648,21 +2645,16 @@ public class JPAPersistenceManagerImpl extends AbstractPersistenceManager implem
         }
 
         EntityManager em = getPsu().createEntityManager();
-        System.out.println("CGCGPSU created entity manager");
         try {
             return new TranRequest<RemotablePartitionEntity>(em) {
                 @Override
                 public RemotablePartitionEntity call() {
-                    System.out.println("CGCGPSU finding remotable partition entity");
                     RemotablePartitionEntity partitionEntity = entityMgr.find(RemotablePartitionEntity.class, key);
                     if (partitionEntity == null) {
-                        System.out.println("CGCGIAE there was no remotable partition " + key);
                         return null;
                         //throw new IllegalArgumentException("No partition execution found for key = " + key);
                     }
-                    System.out.println("CGCGPSU setting log path to " + logDirPath);
                     partitionEntity.setLogpath(logDirPath);
-                    System.out.println("CGCGPSU returning " + partitionEntity);
                     return partitionEntity;
                 }
             }.runInNewOrExistingGlobalTran();

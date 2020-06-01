@@ -14,7 +14,6 @@ import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -95,10 +94,7 @@ public class JobInstanceLog {
         boolean success = true;
         for (JobExecutionLog execLog : jobExecutionLogs) {
             //Defect 191586: if the execution logs do not exist true will be returned
-            boolean execPurge = execLog.purge();
-            System.out.println("CGCG5 exec " + execLog.getExecutionId() + " purge: " + execPurge);
-            //success = success && execLog.purge();
-            success = success && execPurge;
+            success = success && execLog.purge();
         }
         for (final File instanceDir : instanceLogRootDirs) {
             //Defect 191586: check to ensure the directory exists before purging
@@ -138,14 +134,11 @@ public class JobInstanceLog {
      * @return
      */
     public boolean areExecutionsLocal() {
-        System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
         for (JobExecutionLog execLog : jobExecutionLogs) {
             if (execLog.getLocalState() != LogLocalState.EXECUTION_LOCAL) {
-                System.out.println("CGCG instancelog execs local: false");
                 return false;
             }
         }
-        System.out.println("CGCG instancelog execs local: true");
         return true;
     }
 
@@ -155,11 +148,9 @@ public class JobInstanceLog {
     public boolean hasRemotePartitionLogs() {
         for (JobExecutionLog execLog : jobExecutionLogs) {
             if (execLog.getRemotePartitionLogs() != null) {
-                System.out.println("CGCG instancelog has remote: true");
                 return true;
             }
         }
-        System.out.println("CGCG instancelog has remote: false");
         return false;
     }
 

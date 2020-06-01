@@ -183,8 +183,6 @@ public class BatchLocationServiceImpl implements BatchLocationService {
      */
     @Override
     public boolean isLocalJobExecution(WSJobExecution jobExecution) {
-        System.out.println("CGCG isLocal server url: " + getBatchRestUrl());
-        System.out.println("CGCG isLocal exec url:   " + jobExecution.getRestUrl());
         return jobExecution.getServerId() == null
                || jobExecution.getRestUrl() == null // If server ID or rest URL were never set, we can treat as local
                || getBatchRestUrl().equals(jobExecution.getRestUrl())

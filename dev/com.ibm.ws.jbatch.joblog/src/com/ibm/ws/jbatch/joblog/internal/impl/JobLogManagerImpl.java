@@ -317,9 +317,6 @@ public class JobLogManagerImpl implements IJobLogManagerService {
             execLogs.add(execLog);
             if (execLog.getLocalState() == LogLocalState.EXECUTION_LOCAL) {
                 instanceDirs.add(execLog.getExecLogRootDir().getParentFile());
-            } else {
-                //TODO
-                System.out.println("CGCG JobLogManagerImpl 327 non-local execution log in this instance log");
             }
         }
 
@@ -364,7 +361,6 @@ public class JobLogManagerImpl implements IJobLogManagerService {
         List<File> jobLogFiles = new ArrayList<File>();
 
         if (batchLocationService.isLocalJobExecution(jobExecution)) {
-            System.out.println("CGCG6 execution " + jobExecution.getExecutionId() + " is local");
             localState = LogLocalState.EXECUTION_LOCAL;
             jobLogDirName = jobExecution.getLogpath();
             jobLogDir = StringUtils.isEmpty(jobLogDirName) ? getServerOutputDir(getJobExecutionLogDirName(jobInstance, jobExecutionId)) : new File(jobLogDirName);
@@ -377,16 +373,9 @@ public class JobLogManagerImpl implements IJobLogManagerService {
                     jobLogDir = StringUtils.isEmpty(jobLogDirName) ? getServerOutputDir(getJobExecutionLogDirName(jobInstance,
                                                                                                                   jobExecutionId)) : new File(jobLogDirName).getParentFile().getParentFile(); // Go two steps back to exclude the step name/partition num directories
                     jobLogFiles.addAll(FileUtils.findFiles(new File(jobLogDirName), JobLogFileFilter));
-                    System.out.println("CGCG6 execution " + jobExecution.getExecutionId() + " has local partitions");
                     localState = LogLocalState.PARTITION_LOCAL;
                 }
             }
-        }
-
-        System.out.println("CGCGCG Log local state is " + localState);
-        System.out.println("CGCGCG files: ");
-        for (File log : jobLogFiles) {
-            System.out.println("CGCGCG     " + log.getAbsolutePath());
         }
 
         return new JobExecutionLog(jobExecution, jobLogFiles, jobLogDir, localState, remotePartitions);

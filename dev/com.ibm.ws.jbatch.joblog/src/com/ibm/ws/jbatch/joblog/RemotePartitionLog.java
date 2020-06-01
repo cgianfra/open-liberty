@@ -43,10 +43,6 @@ public class RemotePartitionLog {
     public RemotePartitionLog(WSRemotablePartitionExecution partition) {
         this.remotePartition = partition;
         this.partitionLogRootDir = new File(partition.getLogpath());
-        System.out.println("CGCG Created RemotePartitionLog for execution: " + partition.getJobExecution().getExecutionId() + ", partition: " + partition.getPartitionNumber());
-//        System.out.println("CGCG restUrl = " + partition.getRestUrl());
-//        System.out.println("CGCG logpath = " + partition.getLogpath());
-//        System.out.println("CGCG serverId = " + partition.getServerId());
     }
 
     public WSRemotablePartitionExecution getRemotePartition() {

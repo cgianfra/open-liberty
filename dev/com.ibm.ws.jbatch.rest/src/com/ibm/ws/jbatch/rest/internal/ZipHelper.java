@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.ibm.ws.jbatch.rest.internal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,19 +52,18 @@ public class ZipHelper {
     public static void zipFilesToStream(List<File> files, 
                                         List<File> zipRootDirs,
                                         OutputStream outputStream) throws IOException {
-    	
-    	System.out.println("CGCG zipFilesToStream entry");
-    	System.out.println("CGCG files: " + Arrays.toString(files.toArray()));
-    	System.out.println("CGCG rootdirs: " + Arrays.toString(zipRootDirs.toArray()));
-    	        
-        ZipOutputStream zipStream = new ZipOutputStream(outputStream);
+    	  	        
+    	// We may have already wrapped this as a zip stream
+    	ZipOutputStream zipStream = (outputStream instanceof ZipOutputStream) ? (ZipOutputStream) outputStream
+    			                                                              : new ZipOutputStream(outputStream);
+
  
         for (File file : files) {
             zipStream.putNextEntry(new ZipEntry( getNormalizedRelativePath(file, zipRootDirs) ) );
             copyStream(new FileInputStream(file), zipStream);
             zipStream.closeEntry();
         }
-        
+                
         zipStream.close();
     }
     
@@ -72,10 +72,7 @@ public class ZipHelper {
      * @return the path-normalized result of getRelativePath
      */
     protected static String getNormalizedRelativePath(File file, List<File> rootDirs) throws IOException {
-    	for (File rootDir : rootDirs) {
-    		System.out.println("CGCG zipcheck  " + file.getCanonicalPath());
-    		System.out.println("CGCG zipcheck2 " + rootDir.getCanonicalPath());
-    		
+    	for (File rootDir : rootDirs) {   		
     		if (file.getCanonicalPath().contains(rootDir.getCanonicalPath())) {
     			return StringUtils.normalizePath( getRelativePath(file, rootDir) );
     		}
@@ -148,16 +145,13 @@ public class ZipHelper {
         return "\nxxxxx End file: " + getNormalizedRelativePath(file, rootDirs)  + " xxxxxxxxxxxxxxxxxx\n";
     }
     
-    //CGCG comment
-    public static void copyZipEntries(ZipInputStream zipInput, OutputStream out) throws IOException {
-    	ZipOutputStream zipOutput = new ZipOutputStream(out);
-    	byte[] buf = new byte[1024 * 1024];
-    	
+    // Copy the ZipEntries of the input stream to entries in the output stream.
+    public static void copyZipEntries(ZipInputStream zipInput, ZipOutputStream zipOutput) throws IOException {
+    	byte[] buf = new byte[2048];
     	ZipEntry entry;
     	while ((entry = zipInput.getNextEntry()) != null) {
-			System.out.println("CGCG copying zip entry " + entry.getName());
     		zipOutput.putNextEntry(entry);
-    		int len;
+    		int len = 0;
     		while ((len = zipInput.read(buf)) > 0) {
     			zipOutput.write(buf, 0, len);
     		}

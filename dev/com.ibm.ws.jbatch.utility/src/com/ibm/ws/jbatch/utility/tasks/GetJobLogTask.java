@@ -60,7 +60,7 @@ public class GetJobLogTask extends BaseBatchRestTask<GetJobLogTask> {
         Response response = (getJobInstanceId() != null) 
                                 ? batchRestClient.getJobLogsForJobInstance( getJobInstanceId(), getType() )
                                 : batchRestClient.getJobLogsForJobExecution( getJobExecutionId(), getType() );
-        
+                                    
         // If --outputfile is specified, use that.
         // Otherwise if a filename= came back in the Content-Disposition header (meaning
         // the response payload is a zip file), then use that filename. 

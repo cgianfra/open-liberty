@@ -93,7 +93,7 @@ public class Response {
         InputStream responseStream = getInputStream();
         
         String contentType = getHeader("Content-Type");
-        
+                
         if ( contentType != null && contentType.contains("text/plain") ) {
             // Plain text response.  Handle the char encoding.
             String charsetName = ObjectUtils.firstNonNull( HttpUtils.parseHeaderParameter(contentType, "charset"), "UTF-8");

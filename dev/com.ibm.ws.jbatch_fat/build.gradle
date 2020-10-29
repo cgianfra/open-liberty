@@ -8,5 +8,11 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
+//apply from: '../wlp-gradle/subprojects/fat.gradle'
 
 addRequiredLibraries.dependsOn addDerby
+
+dependencies {
+  requiredLibs project(":com.ibm.ws.jbatch.test.dbservlet"),
+	'commons-io:commons-io:2.6'
+}

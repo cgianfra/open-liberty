@@ -13,6 +13,6 @@
 addRequiredLibraries.dependsOn addDerby
 
 dependencies {
-  requiredLibs project(":com.ibm.ws.jbatch.test.dbservlet"),
+  requiredLibs project(":com.ibm.ws.jbatch.test.common"),
 	'commons-io:commons-io:2.6'
 }

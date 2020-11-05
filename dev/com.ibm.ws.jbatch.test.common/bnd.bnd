@@ -12,7 +12,7 @@
 bVersion=1.0
 
 Bundle-Name: Batch FAT Common
-Bundle-SymbolicName: com.ibm.ws.jbatch.test.dbservlet
+Bundle-SymbolicName: com.ibm.ws.jbatch.test.common
 Bundle-Description: Common code for Batch FAT projects; version=${bVersion}
 
 #Export-Package: \

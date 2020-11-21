@@ -10,6 +10,7 @@
  *******************************************************************************/
 package batch.fat.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
@@ -22,12 +23,59 @@ import javax.batch.runtime.StepExecution;
 import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+
+import com.ibm.websphere.simplicity.ShrinkHelper;
+
 import componenttest.topology.impl.LibertyServer;
 
 /**
  *
  */
 public class BatchFatUtils {
+
+    public static WebArchive addDropinsWebApp(LibertyServer targetServer,
+                                              String appName,
+                                              String... packageNames) throws Exception {
+        return addWebApp(targetServer, IS_DROPIN, appName, packageNames);
+    }
+
+    public static final boolean IS_DROPIN = true;
+
+    public static WebArchive addWebApp(LibertyServer targetServer,
+                                       boolean isDropin,
+                                       String appName,
+                                       String... packageNames) throws Exception {
+        WebArchive webApp = ShrinkWrap.create(WebArchive.class, appName); // + ".war"); TODO: Remove .war from app dir names?
+        webApp.addPackages(true, packageNames);
+
+        File webInf = new File("test-applications/" + appName + "/resources/WEB-INF");
+        if (webInf.exists()) {
+            for (File webInfElement : webInf.listFiles()) {
+                if (!!!webInfElement.isDirectory()) { // Ignore classes subdir
+                    webApp.addAsWebInfResource(webInfElement);
+                }
+            }
+        }
+
+        // Batch job definition files; unique to packaging batch applications
+        File webInfBatchJobs = new File("test-applications/" + appName + "/resources/WEB-INF/classes/META-INF/batch-jobs");
+        if (webInfBatchJobs.exists()) {
+            for (File batchJob : webInfBatchJobs.listFiles()) {
+                String target = "classes/META-INF/batch-jobs/" + batchJob.getName();
+                webApp.addAsWebInfResource(batchJob, target);
+            }
+        }
+
+        // Package properties
+        // TODO: include package.properties file for batchFAT.war
+
+        String appFolder = (isDropin ? "dropins" : "apps");
+        ShrinkHelper.exportToServer(targetServer, appFolder, webApp);
+
+        return webApp;
+    }
 
     public static final String MEDIA_TYPE_APPLICATION_JSON = "application/json; charset=UTF-8";
 
@@ -40,7 +88,7 @@ public class BatchFatUtils {
 
     /**
      * @param jobExecution
-     * 
+     *
      * @return true if jobExecution.batchStatus is any of STOPPED, FAILED, COMPLETED, ABANDONED.
      */
     public static boolean isDone(JsonObject jobExecution) {
@@ -52,9 +100,9 @@ public class BatchFatUtils {
 
     /**
      * Parse job parameters from the request's query parms.
-     * 
+     *
      * @param queryParmNames The query parms to include in the job parameters Properties object
-     * 
+     *
      * @return the given query parms as a Properties object.
      */
     public static Properties getJobParameters(HttpServletRequest request, String... queryParmNames) throws IOException {
@@ -72,7 +120,7 @@ public class BatchFatUtils {
 
     /**
      * Converts List<StepExecution> to map, with key equal to "step name (id)"
-     * 
+     *
      * @param stepExecutions
      * @return
      */

@@ -43,29 +43,29 @@ import componenttest.rules.repeater.RepeatTests;
  * Left in here commented out in case it helps someone running manually.
  */
 @SuiteClasses({
-                BatchJobOperatorApiWithAppSecurityTest.class,
-                BatchSecurityTest.class,
-                BatchUserTranTest.class,
-                BatchNoSecurityTest.class,
-                BatchEveryoneSecurityTest.class,
-                BatchTransactionalMiscTest.class,
-                BonusPayoutViaJobOperatorTest.class,
-                BonusPayoutViaJBatchUtilityTest.class,
-                CDITest.class,
-                ChunkTest.class,
-                JdbcConfigTest.class,
-                LocalServerJobRecoveryAtStartUpTest.class,
-                MiscTest.class,
-                ParallelContextPropagationTest.class,
-                TranTimeoutTest.class,
-                PartitionMetricsTest.class,
-                DDLTest.class,
-                SkipRetryHandlerTest.class,
-                PartitionReducerTest.class,
-                JPAPersistenceManagerImplTest.class,
-                InMemoryPersistenceTest.class,
-                InMemoryPersistenceBatchJobOperatorApiTest.class,
-                JPAPersistenceBatchJobOperatorApiTest.class
+                BatchJobOperatorApiWithAppSecurityTest.class
+//                BatchSecurityTest.class,
+//                BatchUserTranTest.class,
+//                BatchNoSecurityTest.class,
+//                BatchEveryoneSecurityTest.class,
+//                BatchTransactionalMiscTest.class,
+//                BonusPayoutViaJobOperatorTest.class,
+//                BonusPayoutViaJBatchUtilityTest.class,
+//                CDITest.class,
+//                ChunkTest.class,
+//                JdbcConfigTest.class,
+//                LocalServerJobRecoveryAtStartUpTest.class,
+//                MiscTest.class,
+//                ParallelContextPropagationTest.class,
+//                TranTimeoutTest.class,
+//                PartitionMetricsTest.class,
+//                DDLTest.class,
+//                SkipRetryHandlerTest.class,
+//                PartitionReducerTest.class,
+//                JPAPersistenceManagerImplTest.class,
+//                InMemoryPersistenceTest.class,
+//                InMemoryPersistenceBatchJobOperatorApiTest.class,
+//                JPAPersistenceBatchJobOperatorApiTest.class
 })
 public class FATSuite {
     @ClassRule

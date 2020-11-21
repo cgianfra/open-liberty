@@ -19,3 +19,19 @@ dependencies {
   requiredLibs project(":com.ibm.ws.jbatch.test.dbservlet"),
 	'commons-io:commons-io:2.6'
 }
+
+task copyTestApps {
+  dependsOn ':com.ibm.ws.jbatch.test.dbservlet:autoFVT'
+  doLast {
+    copy {
+      from project(':com.ibm.ws.jbatch.test.dbservlet').file('test-applications')
+      into new File('test-applications')
+    }
+  }
+}
+
+jar {
+	dependsOn copyTestApps
+}
+
+autoFVT.dependsOn copyTestApps

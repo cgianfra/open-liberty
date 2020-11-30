@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 International Business Machines Corp.
+ * Copyright 2013, 2020 International Business Machines Corp.
  * 
  * See the NOTICE file distributed with this work for additional information
  * regarding copyright ownership. Licensed under the Apache License, 
@@ -19,7 +19,7 @@ package jakarta.batch.operations;
 /**
  * JobExecutionIsRunningException is thrown when {@link JobOperator#abandon(long)} 
  * is called on a job execution which is currently running (i.e. has a 
- * {@link BatchStatus} of STARTING or STARTED).
+ * {@link jakarta.batch.runtime.BatchStatus} of STARTING or STARTED).
  */
 public class JobExecutionIsRunningException extends BatchRuntimeException {
 

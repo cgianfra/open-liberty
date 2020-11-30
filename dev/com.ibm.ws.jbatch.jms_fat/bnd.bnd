@@ -1,0 +1,83 @@
+#*******************************************************************************
+# Copyright (c) 2017 IBM Corporation and others.
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#     IBM Corporation - initial API and implementation
+#*******************************************************************************
+-include= ~../cnf/resources/bnd/bundle.props
+bVersion=1.0
+
+src: \
+	fat/src,\
+	test-applications/BonusPayout.war/src,\
+	test-applications/BonusPayout.war/resources,\
+	test-applications/BonusPayoutEAR.ear/resources,\
+	test-applications/DbServletApp.war/src,\
+	test-applications/jmsmdb.ear/resources,\
+	test-applications/jmsmdb.jar/src,\
+	test-applications/JobLogEventsLogCreatorMDB.war/src,\
+	test-applications/JobLogEventsLogCreatorMDB.war/resources,\
+	test-applications/JobLogEventsMDB.war/src,\
+	test-applications/JobLogEventsMDB.war/resources,\
+	test-applications/SimpleBatchJob.war/src,\
+	test-applications/SimpleBatchJob.war/resources,\
+	test-applications/SimpleBatchJobCopy.war/src,\
+	test-applications/SimpleBatchJobCopy.war/resources,\
+	test-applications/ThrottlingMDB.war/src,\
+	test-applications/ThrottlingMDB.war/resources,\
+	
+
+fat.project: true
+
+# Not 100% sure what this means, just put it in to have the test pass.
+tested.features: \
+    batch-2.0,\
+    batchmanagement-2.0,\
+    connectors-2.0,\
+    enterprisebeans-4.0,\
+    mdb-4.0,\
+    enterprisebeansremote-4.0,\
+    enterprisebeanshome-4.0,\
+    enterprisebeanslite-4.0,\
+    enterprisebeanspersistenttimer-4.0,\
+    jsonp-2.0,\
+    messagingserver-3.0,\
+    messagingclient-3.0
+
+# Dependencies may be local bundles (e.g. com.ibm.websphere.javaee.servlet.3.1)
+#      or binaries from Artifactory (e.g. commons-logging:commons-logging)
+-buildpath: \
+	com.ibm.websphere.javaee.batch.1.0;version=latest,\
+	com.ibm.websphere.javaee.cdi.1.2;version=latest,\
+	com.ibm.websphere.javaee.connector.1.6;version=latest,\
+	com.ibm.websphere.javaee.ejb.3.2;version=latest,\
+	com.ibm.websphere.javaee.servlet.3.1;version=latest,\
+	com.ibm.websphere.javaee.transaction.1.2;version=latest,\
+	com.ibm.websphere.javaee.jaxrs.2.0;version=latest,\
+	com.ibm.websphere.javaee.jaxws.2.2;version=latest,\
+	com.ibm.websphere.javaee.jms.2.0;version=latest,\
+	com.ibm.websphere.javaee.jsonp.1.0;version=latest,\
+	com.ibm.websphere.security;version=latest,\
+	com.ibm.ws.org.apache.commons.io;version=latest,\
+	com.ibm.ws.common.encoder;version=latest,\
+	com.ibm.ws.jbatch.jms;version=latest,\
+	com.ibm.ws.jbatch.test.dbservlet;version=latest,\
+	com.ibm.ws.security.jaas.common;version=latest,\
+	org.osgi.annotation.versioning;version=latest,\
+	lib/com.ibm.mq.jar;version=file, \
+	lib/com.ibm.mq.commonservices.jar;version=file, \
+	lib/com.ibm.mq.headers.jar;version=file, \
+	lib/com.ibm.mq.jmqi.jar;version=file, \
+	lib/com.ibm.mq.jmqi.remote.jar;version=file, \
+	lib/com.ibm.mq.jmqi.system.jar;version=file, \
+	lib/com.ibm.mq.pcf.jar;version=file, \
+	lib/com.ibm.msg.client.commonservices.jar;version=file
+	
+	
+-testpath: \
+	com.ibm.ws.org.apache.commons.io;version=latest,\
+	com.ibm.ws.jbatch.test.dbservlet;version=latest	

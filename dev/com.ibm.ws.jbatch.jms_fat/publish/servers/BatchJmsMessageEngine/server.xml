@@ -1,0 +1,63 @@
+<server description="BatchJmsMessageEngine">
+
+    <include location="../fatTestPorts.xml" />
+
+	 <!-- Enable features -->
+    <featureManager>
+    	<feature>batchManagement-1.0</feature>
+    	<feature>wasJmsServer-1.0</feature>
+    </featureManager>
+	
+    <!-- Overriding the values of the properties used for wasJmsEndpoint port configuration in fatTestPorts.xml -->
+    <variable name="bvt.prop.jms"      value="${bvt.prop.jms.1}" />
+    <!-- wasJmsPort and wasJmsSSLPort settings in wasJmsEndpoint must match those set in fatTestPorts.xml, to avoid configuration conflict warnings. -->
+    <wasJmsEndpoint id="InboundJmsEndpoint" wasJmsPort="${bvt.prop.jms}" />
+
+	<messagingEngine>
+		<queue id="batchLibertyQueue" forceReliability="ReliablePersistent"></queue>
+	</messagingEngine>
+		
+		
+		
+	<batchPersistence jobStoreRef="BatchDatabaseStore" />
+
+    <databaseStore id="BatchDatabaseStore" dataSourceRef="batchDB" schema="JBATCH" tablePrefix="" />
+
+	<library id="DerbyLib">
+	    <file name="${shared.resource.dir}/derbyclient/derbyclient.jar"/>
+	</library>
+
+	<dataSource id="batchDB" jndiName="jdbc/batch" type="javax.sql.XADataSource">
+      <connectionManager maxPoolSize="2"/>
+      <jdbcDriver libraryRef="DerbyLib"/>
+	  <!-- The following configures in-memory Derby.  For Derby on disk, which is needed if the database
+      is required beyond a single server start, configure the databaseName with a file location such as:
+      databaseName="${shared.config.dir}/data/derbydb" -->
+      <properties.derby.client databaseName="memory:BATCHDB"
+                               user="user" password="pass"
+                               loginTimeout="360s"
+                               portNumber="1527"/>
+    </dataSource>	
+
+   	
+    <keyStore id="defaultKeyStore" location="${server.config.dir}/resources/security/key.p12" type="PKCS12" password="{xor}EzY9Oi0rJg==" />
+	    <!--keyStore id="defaultKeyStore" password="Liberty"/-->
+    <basicRegistry id="basic" realm="ibm/api">
+        <user name="bob" password="bobpwd"/>
+        <user name="jane" password="janepwd"/>
+    </basicRegistry>
+	
+    <administrator-role><user>bob</user></administrator-role>
+
+	<!-- Everyone is a batch admin for non security related tests -->
+	<authorization-roles id="com.ibm.ws.batch">
+		<security-role name="batchAdmin">
+			<user name="bob" />
+			<user name="jane" />
+		</security-role>
+	</authorization-roles>
+	
+	<transaction totalTranLifetimeTimeout="6m"/>
+		
+	<javaPermission className="java.net.SocketPermission" name="*" actions="connect,resolve"/>
+</server>

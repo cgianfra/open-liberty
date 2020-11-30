@@ -1,0 +1,9 @@
+<server>
+    <include location="../fatTestPorts.xml" />
+
+
+	<httpEndpoint id="defaultHttpEndpoint" host="*"
+		httpPort="${bvt.prop.batch.endpoint_1_HTTP_default}" httpsPort="${bvt.prop.batch.endpoint_1_HTTP_default.secure}">
+		<tcpOptions soReuseAddr="true" />
+	</httpEndpoint>
+</server>

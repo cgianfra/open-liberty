@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 
+2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
+
+<ejb-jar>
+    <display-name>Mdb Test</display-name> 
+    <enterprise-beans>
+        <message-driven>
+            <display-name>AnnotatedMdb</display-name>
+            <ejb-name>AnnotatedMDB</ejb-name>
+            <ejb-class>AnnotatedMDB</ejb-class>
+  
+            <resource-env-ref>
+               <resource-env-ref-name>batchConnectionFactory</resource-env-ref-name>
+             	<resource-env-ref-type>javax.jms.Topic</resource-env-ref-type>
+            </resource-env-ref> 
+            <resource-ref>
+                <description>description</description>
+                <res-ref-name>jms/batch/connectionFactory</res-ref-name>
+                <res-type>javax.jms.ConnectionFactory</res-type>
+                <res-auth>Application</res-auth>
+                <res-sharing-scope>Shareable</res-sharing-scope>
+            </resource-ref> 
+            
+            
+        </message-driven>
+    </enterprise-beans>
+
+    <assembly-descriptor>
+        <container-transaction>
+            <method>
+                <ejb-name>testMdb</ejb-name>
+                <method-name>onMessage</method-name>
+                <method-params>
+                    <method-param>javax.jms.Message</method-param>
+                </method-params>
+            </method>
+            <trans-attribute>Required</trans-attribute>
+        </container-transaction>
+    </assembly-descriptor> 
+</ejb-jar>

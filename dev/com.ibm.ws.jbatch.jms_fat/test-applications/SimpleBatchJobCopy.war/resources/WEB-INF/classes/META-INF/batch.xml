@@ -1,0 +1,5 @@
+<batch-artifacts xmlns="http://xmlns.jcp.org/xml/ns/javaee">
+    <ref id="securityBatchlet" class="com.ibm.jbatch.tck.artifacts.specialized.copy.SecurityBatchlet" />
+    <ref id="simpleBatchlet" class="artifacts.copy.SimpleBatchlet" />
+    <ref id="sleepyBatchlet" class="com.ibm.jbatch.tck.artifacts.specialized.copy.SleepyBatchlet" />
+</batch-artifacts>

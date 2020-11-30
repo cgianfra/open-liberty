@@ -1,0 +1,2 @@
+#generate wait on start path to slow down creation of job executions
+-Dcom.ibm.ws.jbatch.internal.test.endpoint.execution.wait=true

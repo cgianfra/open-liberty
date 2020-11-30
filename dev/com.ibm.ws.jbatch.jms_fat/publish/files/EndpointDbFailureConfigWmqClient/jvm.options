@@ -1,0 +1,2 @@
+#generate persistence exception processing message path on jms listener 
+-Dcom.ibm.ws.jbatch.internal.test.endpoint.db.exception=true

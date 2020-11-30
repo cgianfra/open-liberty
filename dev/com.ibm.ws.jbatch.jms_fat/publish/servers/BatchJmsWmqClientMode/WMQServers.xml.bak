@@ -1,0 +1,7 @@
+<serversList>
+	<server
+		hostName="caspe.hursley.ibm.com" port="1414"/>	  	
+	<server
+	  	hostName="horodlo.hursley.ibm.com" port="1414"/>
+
+</serversList>

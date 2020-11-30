@@ -1,0 +1,85 @@
+<server description="BatchJmsEndpoint">
+
+	 <!-- Enable features -->
+    <featureManager>
+        <feature>batchManagement-1.0</feature>
+        <feature>appSecurity-2.0</feature>
+    	<feature>wasJmsClient-2.0</feature>
+    	<feature>timedexit-1.0</feature>
+    </featureManager>
+    
+    <iiopEndpoint id="defaultIiopEndpoint" iiopPort="${bvt.prop.IIOP}">
+        <iiopsOptions  iiopsPort="${bvt.prop.IIOP.secure}" sslRef="defaultSSLConfig"/>
+    </iiopEndpoint>
+
+    <wasJmsEndpoint host="localhost" wasJmsPort="${bvt.prop.jms}" wasJmsSSLPort="${bvt.prop.jms.ssl}" />
+    
+    <jndiEntry jndiName="serverName" value="${wlp.server.name}"/>
+    
+  	<httpEndpoint id="defaultHttpEndpoint"
+  	    	      host="*"
+  	    	      httpPort="${bvt.prop.batch.endpoint_1_HTTP_default}"
+  	    	      httpsPort="${bvt.prop.batch.endpoint_1_HTTP_default.secure}">
+		<tcpOptions soReuseAddr="true" />
+    </httpEndpoint>
+    
+	<batchPersistence jobStoreRef="BatchDatabaseStore" />
+
+    <databaseStore id="BatchDatabaseStore" dataSourceRef="batchDB" schema="JBATCH" tablePrefix="" />
+
+	<library id="DerbyLib">
+	    <file name="${shared.resource.dir}/derbyclient/derbyclient.jar"/>
+	</library>
+
+	<dataSource id="batchDB" jndiName="jdbc/BonusPayoutDS" type="javax.sql.XADataSource">
+      <connectionManager maxPoolSize="2"/>
+      <jdbcDriver libraryRef="DerbyLib"/>
+	  <!-- The following configures in-memory Derby.  For Derby on disk, which is needed if the database
+      is required beyond a single server start, configure the databaseName with a file location such as:
+      databaseName="${shared.config.dir}/data/derbydb" -->
+      <properties.derby.client databaseName="memory:BATCHDB"
+                               user="user" password="pass"
+                               portNumber="1527"/>
+    </dataSource>
+	
+    <keyStore id="defaultKeyStore" location="${server.config.dir}/resources/security/key.p12" type="PKCS12" password="{xor}EzY9Oi0rJg==" />
+	    <!--keyStore id="defaultKeyStore" password="Liberty"/-->
+    <basicRegistry id="basic" realm="ibm/api">
+        <user name="bob" password="bobpwd"/>
+        <user name="jane" password="janepwd"/>
+    </basicRegistry>
+	
+    <administrator-role><user>bob</user></administrator-role>
+
+	<!-- Everyone is a batch admin for non security related tests -->
+	<authorization-roles id="com.ibm.ws.batch">
+		<security-role name="batchAdmin">
+			<user name="bob" />
+			<user name="jane" />
+		</security-role>
+	</authorization-roles>
+	
+	<batchJmsExecutor activationSpecRef="batchActivationSpec"
+					  queueRef="batchJobSubmissionQueue"/>					  
+	
+		<!-- note that message selector need space around the equal sign-->
+        <jmsActivationSpec id="batchActivationSpec">
+		<properties.wasJms maxBatchSize="1" maxConcurrency="5"
+		                   messageSelector="(com_ibm_ws_batch_applicationName = 'SimpleBatchJob' OR com_ibm_ws_batch_applicationName = 'BonusPayoutFake')"
+		                   destinationRef="batchJobSubmissionQueue"
+		                   destinationType="javax.jms.Queue"
+		                   remoteServerAddress="localhost:${bvt.prop.jms.1}:BootstrapBasicMessaging">
+		</properties.wasJms>
+	</jmsActivationSpec>
+		
+	<jmsQueue id="batchJobSubmissionQueue">
+		<properties.wasJms deliveryMode="Persistent" queueName="batchLibertyQueue" readAhead="AsConnection" timeToLive="0"></properties.wasJms>
+	</jmsQueue>
+	
+	<transaction totalTranLifetimeTimeout="6m"/>
+	
+	<javaPermission className="java.net.SocketPermission" name="*" actions="connect,resolve"/>
+	<javaPermission className="java.security.AllPermission" codebase="${shared.resource.dir}/derby/derby.jar"/>
+	<javaPermission className="java.security.AllPermission" codebase="${shared.resource.dir}/derbyclient/derbyclient.jar"/>
+	
+</server>

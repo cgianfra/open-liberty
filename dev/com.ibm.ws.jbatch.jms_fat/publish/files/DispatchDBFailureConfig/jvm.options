@@ -1,0 +1,2 @@
+#generate exception on jms queue path
+-Dcom.ibm.ws.jbatch.internal.test.db.exception=true

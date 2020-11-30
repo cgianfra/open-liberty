@@ -1,0 +1,7 @@
+<batch-artifacts xmlns="http://xmlns.jcp.org/xml/ns/javaee">
+    <ref id="batchletUsingStepContextImpl" class="com.ibm.jbatch.tck.artifacts.specialized.BatchletUsingStepContextImpl" />
+    <ref id="securityBatchlet" class="com.ibm.jbatch.tck.artifacts.specialized.SecurityBatchlet" />
+    <ref id="simpleBatchlet" class="artifacts.SimpleBatchlet" />
+    <ref id="sleepyBatchlet" class="com.ibm.jbatch.tck.artifacts.specialized.SleepyBatchlet" />
+    <ref id="logControlBatchlet" class="com.ibm.jbatch.artifacts.specialized.LogControlBatchlet" />
+</batch-artifacts>

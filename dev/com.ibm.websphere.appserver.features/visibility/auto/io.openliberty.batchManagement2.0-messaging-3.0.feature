@@ -5,6 +5,7 @@ IBM-Provision-Capability: \
  osgi.identity; filter:="(&(type=osgi.subsystem.feature)(|(osgi.identity=io.openliberty.messagingClient-3.0)(osgi.identity=io.openliberty.messagingServer-3.0)))", \
  osgi.identity; filter:="(&(type=osgi.subsystem.feature)(osgi.identity=io.openliberty.batchManagement-2.0))"
 -features=com.ibm.websphere.appserver.transaction-2.0,\
+ io.openliberty.messaging-3.0,\
  io.openliberty.mdb-4.0
 -bundles=com.ibm.ws.jbatch.jms.jakarta
 IBM-Install-Policy: when-satisfied

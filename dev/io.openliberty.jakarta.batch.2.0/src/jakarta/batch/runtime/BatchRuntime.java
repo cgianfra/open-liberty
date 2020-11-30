@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 International Business Machines Corp.
+ * Copyright 2012, 2020 International Business Machines Corp.
  * 
  * See the NOTICE file distributed with this work for additional information
  * regarding copyright ownership. Licensed under the Apache License, 
@@ -31,7 +31,7 @@ import jakarta.batch.operations.BatchRuntimeException;
 import jakarta.batch.operations.JobOperator;
 
 /**
- * BatchRuntime represents the JSR 352 Batch Runtime.
+ * BatchRuntime represents the Jakarta Batch Runtime.
  * It provides factory access to the JobOperator interface.
  *
  */

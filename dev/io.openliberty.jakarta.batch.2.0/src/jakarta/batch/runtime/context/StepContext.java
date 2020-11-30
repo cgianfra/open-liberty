@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 International Business Machines Corp.
+ * Copyright 2012, 2020 International Business Machines Corp.
  * 
  * See the NOTICE file distributed with this work for additional information
  * regarding copyright ownership. Licensed under the Apache License, 
@@ -120,7 +120,7 @@ public interface StepContext {
 	/**
 	 * The getMetrics method returns an array of step level metrics. These 
 	 * are things like commits, skips, etc. 
-	 * @see jakarta.batch.runtime.metric.Metric for definition of standard 
+	 * @see jakarta.batch.runtime.Metric for definition of standard 
 	 * metrics.  
 	 * @return metrics array 
 	 */
